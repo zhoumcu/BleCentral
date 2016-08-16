@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="debug"><source path="F:\zhou\androidproject\BleCentral20160801\BleCentral\barCodeTest\build\intermediates\bundles\debug\assets"/></dataSet><dataSet config="main"><source path="F:\zhou\androidproject\BleCentral20160801\BleCentral\barCodeTest\src\androidTest\assets"/><source path="F:\zhou\androidproject\BleCentral20160801\BleCentral\barCodeTest\build\generated\assets\shaders\androidTest\debug"/></dataSet></merger>
