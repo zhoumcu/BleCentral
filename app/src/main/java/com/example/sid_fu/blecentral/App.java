@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.res.AssetFileDescriptor;
+import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Handler;
@@ -170,7 +173,33 @@ public class App extends Application implements TextToSpeech.OnInitListener{
 //        }, delay);
     }
     public void playSound(final String sound)  {
-        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        //AudioTrack for incoming audio to play as below:
+
+        int mMaxJitter = AudioTrack.getMinBufferSize(8000, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT);
+        new AudioTrack(AudioManager.STREAM_VOICE_CALL,8000,
+                AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
+                mMaxJitter, AudioTrack.MODE_STREAM);
+//To register broadcast receiver for bluetooth audio routing
+//        IntentFilter ifil = new IntentFilter();
+//        ifil.addAction(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED);
+//        this.registerReceiver(<receiver instance>,ifil);
+
+        //To get AudioManager service
+        AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+
+        //Whenever user select to route audio to Bluetooth
+        am.setMode(AudioManager.MODE_IN_CALL);//tried setting with other mode also viz. MODE_NORMAL, MODE_IN_COMMUNICATION but no luck
+        am.startBluetoothSco();//after this I get AudioManager.SCO_AUDIO_STATE_CONNECTED state in the receiver
+        am.setBluetoothScoOn(true);
+        am.setSpeakerphoneOn(false);
+
+        //Whenever user select to route audio to Phone Speaker
+        am.setMode(AudioManager.MODE_NORMAL);
+        am.stopBluetoothSco();//after this I get      AudioManager.SCO_AUDIO_STATE_DISCONNECTED state in the receiver
+        am.setBluetoothScoOn(false);
+        am.setSpeakerphoneOn(true);
+
+//        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 //        changeToSpeaker(am);
         float audioMaxVolumn = am.getStreamMaxVolume(AudioManager.STREAM_RING);
         float volumnCurrent = am.getStreamVolume(AudioManager.STREAM_RING);
@@ -181,11 +210,11 @@ public class App extends Application implements TextToSpeech.OnInitListener{
         int soundId = sp.play(spMap.get(sound), volumnRatio, volumnRatio, 1, 0, 1f);
 //        sp.setVolume(soundId,volumnRatio,volumnRatio);
         mKillSoundQueue.add(soundId);
-        if (!mKillSoundQueue.isEmpty()&&mKillSoundQueue.size()>1)
-        {
-            sp.stop(mKillSoundQueue.firstElement());
-            mKillSoundQueue.remove(0);
-        }
+//        if (!mKillSoundQueue.isEmpty()&&mKillSoundQueue.size()>1)
+//        {
+//            sp.stop(mKillSoundQueue.firstElement());
+//            mKillSoundQueue.remove(0);
+//        }
         // schedule the current sound to stop after set milliseconds
         mHandler.postDelayed(new Runnable() {
             public void run() {
@@ -197,7 +226,30 @@ public class App extends Application implements TextToSpeech.OnInitListener{
 
     }
     public void playSigleSound(final String sound)  {
-        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int mMaxJitter = AudioTrack.getMinBufferSize(8000, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT);
+        new AudioTrack(AudioManager.STREAM_VOICE_CALL,8000,
+                AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
+                mMaxJitter, AudioTrack.MODE_STREAM);
+//To register broadcast receiver for bluetooth audio routing
+//        IntentFilter ifil = new IntentFilter();
+//        ifil.addAction(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED);
+//        this.registerReceiver(<receiver instance>,ifil);
+
+        //To get AudioManager service
+        AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+
+        //Whenever user select to route audio to Bluetooth
+        am.setMode(AudioManager.MODE_IN_CALL);//tried setting with other mode also viz. MODE_NORMAL, MODE_IN_COMMUNICATION but no luck
+        am.startBluetoothSco();//after this I get AudioManager.SCO_AUDIO_STATE_CONNECTED state in the receiver
+        am.setBluetoothScoOn(true);
+        am.setSpeakerphoneOn(false);
+
+        //Whenever user select to route audio to Phone Speaker
+        am.setMode(AudioManager.MODE_NORMAL);
+        am.stopBluetoothSco();//after this I get      AudioManager.SCO_AUDIO_STATE_DISCONNECTED state in the receiver
+        am.setBluetoothScoOn(false);
+        am.setSpeakerphoneOn(true);
+
 //        changeToSpeaker(am);
         float audioMaxVolumn = am.getStreamMaxVolume(AudioManager.STREAM_RING);
         float volumnCurrent = am.getStreamVolume(AudioManager.STREAM_RING);
